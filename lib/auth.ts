@@ -1,16 +1,22 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Credentials({
       name: "credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { type: "email" },
+        password: { type: "password" },
       },
       async authorize(credentials: any) {
+        if (!credentials) return null;
+
         // TEMP mock user (database comes later)
         const user = {
           id: "1",
@@ -18,8 +24,6 @@ export const authOptions = {
           password: await bcrypt.hash("password123", 10),
           role: "admin",
         };
-
-        if (!credentials) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password,
@@ -36,4 +40,17 @@ export const authOptions = {
       },
     }),
   ],
+
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) token.role = user.role;
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
 };
