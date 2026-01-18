@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { LogoutButton } from "./components/LogoutButton";
 import { authOptions } from "@/lib/auth";
-import { setEngine } from "crypto";
+import SessionWrapper from "./components/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "Simple Authenication",
@@ -18,18 +18,20 @@ export default async function RootLayout({
   console.log("Current Session:", session); //
   return (
     <html lang="en">
-      <body>
-        <nav style={{ padding: 10, borderBottom: "1px solid #ccc" }}>
-          {session && (
-            <>
-              <span>{session.user?.email}</span>
-              <LogoutButton />
-            </>
-          )}
-        </nav>
+      <SessionWrapper>
+        <body>
+          <nav style={{ padding: 10, borderBottom: "1px solid #ccc" }}>
+            {session && (
+              <>
+                <span>{session.user?.email}</span>
+                <LogoutButton />
+              </>
+            )}
+          </nav>
 
-        {children}
-      </body>
+          {children}
+        </body>
+      </SessionWrapper>
     </html>
   );
 }
