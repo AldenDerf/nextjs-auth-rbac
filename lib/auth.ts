@@ -1,6 +1,7 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -17,13 +18,12 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials: any) {
         if (!credentials) return null;
 
-        // TEMP mock user (database comes later)
-        const user = {
-          id: "1",
-          email: "admin@test.com",
-          password: await bcrypt.hash("password123", 10),
-          role: "admin",
-        };
+        
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password,
