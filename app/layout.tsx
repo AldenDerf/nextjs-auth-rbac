@@ -4,6 +4,7 @@ import NavBar from "./components/Navbar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { LogoutButton } from "./components/LogoutButton";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Simple Authenication",

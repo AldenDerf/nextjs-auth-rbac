@@ -7,7 +7,6 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../prisma/generated"
-  engineType = "binary"
 }
 
 datasource db {
@@ -15,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
-  email String @unique
-  password String
-  role String @default("user")
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("user")
   createdAt DateTime @default(now())
 }
